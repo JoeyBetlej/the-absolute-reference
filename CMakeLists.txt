@@ -4,7 +4,21 @@ set(CMAKE_VERBOSE_MAKEFILE on)
 
 # TODO: Add a CMake option for specifying the platform, choosing a sane default
 # based on the platform CMake was run on if the option wasn't specified.
-set(PLATFORM_NAME "SDL2")
+# Default to SDL2 for now:
+if(NOT DEFINED PLATFORM_NAME)
+	set(PLATFORM_NAME "SDL2")
+endif()
+
+# This includes the Vita toolchain, must go before project definition
+if(${PLATFORM_NAME} STREQUAL "Vita")
+	if(NOT DEFINED CMAKE_TOOLCHAIN_FILE)
+		if(DEFINED ENV{VITASDK})
+  			set(CMAKE_TOOLCHAIN_FILE "$ENV{VITASDK}/share/vita.toolchain.cmake" CACHE PATH "toolchain file")
+		else()
+  			message(FATAL_ERROR "Please define VITASDK to point to your SDK path!")
+		endif()
+	endif()
+endif()
 
 set(EXECUTABLE_SOURCES
 	"../../BuildData/BuildData.c"
